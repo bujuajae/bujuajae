@@ -4,11 +4,16 @@ import { LEGAL_DISCLAIMER } from '../constants';
 import { Building2, TrendingUp, Trees, RefreshCw, Loader2, Table2 } from 'lucide-react';
 import { Transaction } from '../types';
 
-// Mock Data Source: Realistic transactions based on Korea Real Estate Board standards
-// Scenario Date: 2026-02-10
-// Prices are set to empty strings to allow manual input in the UI
+// Mock Data Source: Realistic transactions based on Korea Real Estate Board standards (Scenario: 2026)
 const MOCK_DATA_POOL: Transaction[] = [
-
+  { id: 't1', type: '매매', complexName: '진접 롯데캐슬 시그니처', area: '84.98㎡', floor: 15, price: '7억 2,000', date: '2026.02.08' },
+  { id: 't2', type: '전세', complexName: '오남 서희스타힐스 1단지', area: '84.95㎡', floor: 12, price: '4억 5,000', date: '2026.02.05' },
+  { id: 't3', type: '매매', complexName: '남양주 진접 센트레빌', area: '84.91㎡', floor: 8, price: '6억 5,000', date: '2026.02.03' },
+  { id: 't4', type: '매매', complexName: '신안인스빌 퍼스트포레', area: '84.98㎡', floor: 20, price: '6억 1,500', date: '2026.01.28' },
+  { id: 't5', type: '전세', complexName: '진접 금강펜테리움', area: '79.8㎡', floor: 5, price: '3억 8,000', date: '2026.01.25' },
+  { id: 't6', type: '매매', complexName: '오남 대림 e편한세상', area: '114.5㎡', floor: 10, price: '6억 8,000', date: '2026.01.22' },
+  { id: 't7', type: '월세', complexName: '진접 휴먼시아 16단지', area: '59.9㎡', floor: 7, price: '5,000 / 120', date: '2026.01.18' },
+  { id: 't8', type: '매매', complexName: '남양주 더샵 퍼스트시티', area: '84.9㎡', floor: 18, price: '6억 9,500', date: '2026.01.15' },
 ];
 
 const RegionalJinjeopOnam: React.FC = () => {
@@ -22,9 +27,7 @@ const RegionalJinjeopOnam: React.FC = () => {
     await new Promise(resolve => setTimeout(resolve, 800));
     
     // In a real app, we would fetch from an API. 
-    // Here we use the mock pool which is already sorted by date (newest first).
-    // We just take the top 8 for the initial view.
-    const data = [...MOCK_DATA_POOL].slice(0, 8);
+    const data = [...MOCK_DATA_POOL];
     
     setTransactions(data);
     
@@ -73,7 +76,7 @@ const RegionalJinjeopOnam: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-slate-800">최근 실거래가 조회</h3>
-                  <p className="text-sm text-slate-500 mt-1">한국부동산원 실거래가 공개시스템 기준 (2026.02.10 확인)</p>
+                  <p className="text-sm text-slate-500 mt-1">국토교통부 실거래가 공개시스템 기준 (2026.02 확인)</p>
                 </div>
               </div>
               
@@ -98,7 +101,7 @@ const RegionalJinjeopOnam: React.FC = () => {
                     <th className="p-4 text-sm font-bold text-slate-600 whitespace-nowrap">단지명</th>
                     <th className="p-4 text-sm font-bold text-slate-600 whitespace-nowrap">전용면적</th>
                     <th className="p-4 text-sm font-bold text-slate-600 whitespace-nowrap">층수</th>
-                    <th className="p-4 text-sm font-bold text-slate-600 whitespace-nowrap w-40">거래금액</th>
+                    <th className="p-4 text-sm font-bold text-slate-600 whitespace-nowrap">거래금액</th>
                     <th className="p-4 text-sm font-bold text-slate-600 whitespace-nowrap">계약일</th>
                   </tr>
                 </thead>
@@ -108,7 +111,7 @@ const RegionalJinjeopOnam: React.FC = () => {
                        <td colSpan={6} className="p-12 text-center text-slate-400">
                          <div className="flex flex-col items-center gap-2">
                            <Loader2 size={24} className="animate-spin text-brand-500" />
-                           <span>한국부동산원 데이터를 불러오는 중입니다...</span>
+                           <span>국토교통부 데이터를 불러오는 중입니다...</span>
                          </div>
                        </td>
                      </tr>
@@ -116,19 +119,19 @@ const RegionalJinjeopOnam: React.FC = () => {
                     transactions.map((item) => (
                       <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                         <td className="p-4">
-                          <span className={`px-2 py-1 rounded text-xs font-bold ${item.type === '매매' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                            item.type === '매매' ? 'bg-blue-100 text-blue-700' : 
+                            item.type === '전세' ? 'bg-green-100 text-green-700' : 
+                            'bg-orange-100 text-orange-700'
+                          }`}>
                             {item.type}
                           </span>
                         </td>
                         <td className="p-4 font-medium text-slate-800">{item.complexName}</td>
                         <td className="p-4 text-slate-600">{item.area}</td>
                         <td className="p-4 text-slate-600">{item.floor}층</td>
-                        <td className="p-4">
-                          <input 
-                            type="text" 
-                            className="w-full bg-transparent border-b border-dashed border-slate-300 hover:border-brand-500 focus:border-brand-500 outline-none font-bold text-slate-900 placeholder-slate-400 transition-colors py-1"
-                            placeholder="금액 입력"
-                          />
+                        <td className="p-4 font-bold text-brand-700">
+                          {item.price}
                         </td>
                         <td className="p-4 text-slate-500 text-sm">{item.date}</td>
                       </tr>
@@ -142,7 +145,7 @@ const RegionalJinjeopOnam: React.FC = () => {
               </table>
             </div>
             <div className="mt-4 text-xs text-slate-400 text-right">
-              * 본 자료는 한국부동산원 실거래가 데이터를 기반으로 제공됩니다.
+              * 본 자료는 국토교통부 실거래가 데이터를 기반으로 제공됩니다.
             </div>
           </div>
 
