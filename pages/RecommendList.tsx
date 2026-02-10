@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Section from '../components/Section';
 import { Property } from '../types';
-import { MapPin, Calendar, Ruler, Phone, Image as ImageIcon, Plus } from 'lucide-react';
+import { MapPin, Calendar, Ruler, Phone, Image as ImageIcon } from 'lucide-react';
 import { CONTACT_INFO } from '../constants';
 
 const INITIAL_EMPTY_PROPERTIES: Property[] = Array(6).fill(null).map((_, i) => ({
@@ -35,6 +35,26 @@ const RecommendList: React.FC = () => {
       
       return { ...p, [field]: value };
     }));
+  };
+
+  const handleImagePaste = (id: string, e: React.ClipboardEvent) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const blob = items[i].getAsFile();
+        if (blob) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              handleInputChange(id, 'imageUrl', event.target.result as string);
+            }
+          };
+          reader.readAsDataURL(blob);
+          e.preventDefault(); // Prevent default paste behavior
+          return;
+        }
+      }
+    }
   };
 
   const toggleRecommended = (id: string) => {
@@ -71,8 +91,13 @@ const RecommendList: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredProperties.map((property) => (
           <div key={property.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-            {/* Image Section */}
-            <div className="relative h-60 bg-gray-200 overflow-hidden group">
+            {/* Image Section - Paste Enabled */}
+            <div 
+              className="relative h-60 bg-gray-200 overflow-hidden group cursor-pointer focus:outline-none focus:ring-4 focus:ring-brand-100 transition-all"
+              tabIndex={0}
+              onPaste={(e) => handleImagePaste(property.id, e)}
+              onClick={(e) => e.currentTarget.focus()}
+            >
               {property.imageUrl ? (
                 <img 
                   src={property.imageUrl} 
@@ -80,25 +105,21 @@ const RecommendList: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2 p-4 text-center select-none">
                   <ImageIcon size={32} />
-                  <span className="text-sm">이미지 URL을 입력하세요</span>
+                  <span className="text-sm font-medium">영역 클릭 후<br/>이미지를 붙여넣으세요 (Ctrl+V)</span>
                 </div>
               )}
               
-              {/* Image URL Input Overlay (Always visible for editing) */}
-              <div className="absolute inset-x-0 top-0 p-2 bg-gradient-to-b from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                <input 
-                  type="text"
-                  placeholder="이미지 주소 (URL) 입력"
-                  className="w-full text-xs bg-white/90 backdrop-blur px-2 py-1 rounded outline-none"
-                  value={property.imageUrl}
-                  onChange={(e) => handleInputChange(property.id, 'imageUrl', e.target.value)}
-                />
+              {/* Hover Overlay for Paste Instruction */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                 <span className="text-white text-sm font-bold bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                   이미지 붙여넣기 (Ctrl+V)
+                 </span>
               </div>
 
               {/* Transaction Type & Property Type Badges */}
-              <div className="absolute top-12 left-4 flex gap-2">
+              <div className="absolute top-4 left-4 flex gap-2 z-10" onClick={(e) => e.stopPropagation()}>
                 <select
                   className={`px-2 py-1 rounded-lg text-xs font-bold shadow-sm appearance-none outline-none cursor-pointer ${
                     property.transactionType === '매매' ? 'bg-blue-600 text-white' :
@@ -124,8 +145,11 @@ const RecommendList: React.FC = () => {
 
               {/* Recommendation Toggle */}
               <button 
-                onClick={() => toggleRecommended(property.id)}
-                className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/70 to-transparent text-left outline-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleRecommended(property.id);
+                }}
+                className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/70 to-transparent text-left outline-none z-10"
               >
                 <span className={`text-xs font-bold flex items-center gap-1 ${property.isRecommended ? 'text-yellow-300' : 'text-gray-400'}`}>
                    ★ {property.isRecommended ? '88부동산 강력 추천' : '추천 설정 (클릭)'}
@@ -200,7 +224,7 @@ const RecommendList: React.FC = () => {
                     type="text"
                     className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded focus:border-brand-500 outline-none"
                     placeholder="예: 올수리, 남향, 급매"
-                    defaultValue={property.features.join(', ')} 
+                    value={property.features.join(', ')}
                     onChange={(e) => handleInputChange(property.id, 'features', e.target.value)}
                   />
                   {/* Visual Preview of Tags */}

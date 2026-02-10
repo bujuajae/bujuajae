@@ -6,6 +6,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: '88부동산 소개', path: '/about' },
   { label: '추천 매물', path: '/recommend' },
   { label: '진접·오남 분석', path: '/region/jinjeop-onam' },
+  { label: '진접2지구 분석', path: '/region/jinjeop2' },
   { label: '왕숙지구 분석', path: '/region/wangsuk' },
   { label: '유튜브·블로그', path: '/social' },
   { label: '상담 신청', path: '/contact' },
