@@ -1,103 +1,55 @@
 import React, { useState } from 'react';
 import Section from '../components/Section';
 import { Property } from '../types';
-import { MapPin, Calendar, Ruler, Building, Tag, Search, Phone } from 'lucide-react';
+import { MapPin, Calendar, Ruler, Phone, Image as ImageIcon, Plus } from 'lucide-react';
 import { CONTACT_INFO } from '../constants';
 
-// Mock Data for Recommended Properties (2026 Scenario)
-const MOCK_PROPERTIES: Property[] = [
-  {
-    id: 'p1',
-    transactionType: '매매',
-    propertyType: '아파트',
-    complexName: '진접 롯데캐슬 시그니처',
-    area: '110㎡ (34평형)',
-    price: '6억 3,000만원',
-    moveInDate: '즉시 입주 가능',
-    floorInfo: '로얄층 / 28층',
-    features: ['올수리', '산 조망', '풀옵션'],
-    description: '주인 거주로 관리 상태 최상, 4호선 진접역 도보 5분 초역세권',
-    imageUrl: 'https://picsum.photos/800/600?random=1',
-    isRecommended: true,
-  },
-  {
-    id: 'p2',
-    transactionType: '전세',
-    propertyType: '아파트',
-    complexName: '오남 서희스타힐스',
-    area: '84㎡ (25평형)',
-    price: '3억 5,000만원',
-    moveInDate: '2026.04.15 이후',
-    floorInfo: '중층 / 20층',
-    features: ['융자없음', '전세자금대출가능', '남향'],
-    description: '신혼부부 강력 추천, 단지 내 초등학교 품은 초품아 단지',
-    imageUrl: 'https://picsum.photos/800/600?random=2',
-    isRecommended: true,
-  },
-  {
-    id: 'p3',
-    transactionType: '월세',
-    propertyType: '오피스텔',
-    complexName: '진접역 더파크뷰',
-    area: '45㎡ (14평형)',
-    price: '3,000 / 90만원',
-    moveInDate: '협의 가능',
-    floorInfo: '고층 / 15층',
-    features: ['신축', '풀퍼니시드', '주차편리'],
-    description: '1인 가구 최적화, 진접역 바로 앞 상업지구 인프라 이용 편리',
-    imageUrl: 'https://picsum.photos/800/600?random=3',
-  },
-  {
-    id: 'p4',
-    transactionType: '매매',
-    propertyType: '아파트',
-    complexName: '해밀마을 신안인스빌',
-    area: '115㎡ (35평형)',
-    price: '5억 2,000만원',
-    moveInDate: '2026.05월 말',
-    floorInfo: '저층 / 15층',
-    features: ['필로티 2층', '아이키우기 좋음', '확장형'],
-    description: '층간소음 걱정 없는 필로티 구조, 단지 조경 뷰가 예쁜 집',
-    imageUrl: 'https://picsum.photos/800/600?random=4',
-  },
-  {
-    id: 'p5',
-    transactionType: '전세',
-    propertyType: '빌라/다세대',
-    complexName: '장현리 신축 빌라',
-    area: '70㎡ (21평형)',
-    price: '2억 1,000만원',
-    moveInDate: '즉시 입주',
-    floorInfo: '3층 / 4층',
-    features: ['엘리베이터 유', '테라스', '주차 100%'],
-    description: '가성비 최고의 넓은 쓰리룸, 버스정류장 도보 2분',
-    imageUrl: 'https://picsum.photos/800/600?random=5',
-  },
-  {
-    id: 'p6',
-    transactionType: '매매',
-    propertyType: '아파트',
-    complexName: '오남 푸르지오',
-    area: '109㎡ (33평형)',
-    price: '4억 1,000만원',
-    moveInDate: '협의 (빠른 입주 가능)',
-    floorInfo: '고층 / 25층',
-    features: ['급매', '호수공원뷰', '기본형'],
-    description: '시세 대비 2천만원 저렴한 급매물, 오남호수공원 영구 조망권',
-    imageUrl: 'https://picsum.photos/800/600?random=6',
-  }
-];
+const INITIAL_EMPTY_PROPERTIES: Property[] = Array(6).fill(null).map((_, i) => ({
+  id: `prop-${i}`,
+  transactionType: '매매',
+  propertyType: '',
+  complexName: '',
+  area: '',
+  price: '',
+  moveInDate: '',
+  floorInfo: '',
+  features: [],
+  description: '',
+  imageUrl: '',
+  isRecommended: false,
+}));
 
 const RecommendList: React.FC = () => {
   const [filterType, setFilterType] = useState<'전체' | '매매' | '전세' | '월세'>('전체');
+  const [properties, setProperties] = useState<Property[]>(INITIAL_EMPTY_PROPERTIES);
 
-  const filteredProperties = MOCK_PROPERTIES.filter(item => {
+  const handleInputChange = (id: string, field: keyof Property, value: any) => {
+    setProperties(prev => prev.map(p => {
+      if (p.id !== id) return p;
+      
+      // Handle special cases
+      if (field === 'features') {
+        // Assume value is a string, split by comma
+        return { ...p, features: value.split(',').map((s: string) => s.trim()).filter(Boolean) };
+      }
+      
+      return { ...p, [field]: value };
+    }));
+  };
+
+  const toggleRecommended = (id: string) => {
+    setProperties(prev => prev.map(p => 
+      p.id === id ? { ...p, isRecommended: !p.isRecommended } : p
+    ));
+  };
+
+  const filteredProperties = properties.filter(item => {
     if (filterType === '전체') return true;
     return item.transactionType === filterType;
   });
 
   return (
-    <Section title="오늘의 추천 매물" subtitle="88부동산이 엄선한 검증된 실매물입니다." grayBg>
+    <Section title="오늘의 추천 매물" subtitle="매물 정보를 직접 입력하여 관리할 수 있습니다." grayBg>
       {/* Filter Tabs */}
       <div className="flex flex-wrap justify-center gap-2 mb-10">
         {['전체', '매매', '전세', '월세'].map((type) => (
@@ -117,67 +69,142 @@ const RecommendList: React.FC = () => {
 
       {/* Property Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredProperties.length > 0 ? (
-          filteredProperties.map((property) => (
-            <div key={property.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-              {/* Image Section */}
-              <div className="relative h-60 bg-gray-200 overflow-hidden">
+        {filteredProperties.map((property) => (
+          <div key={property.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
+            {/* Image Section */}
+            <div className="relative h-60 bg-gray-200 overflow-hidden group">
+              {property.imageUrl ? (
                 <img 
                   src={property.imageUrl} 
                   alt={property.complexName} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <span className={`px-3 py-1 rounded-lg text-xs font-bold shadow-sm ${
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
+                  <ImageIcon size={32} />
+                  <span className="text-sm">이미지 URL을 입력하세요</span>
+                </div>
+              )}
+              
+              {/* Image URL Input Overlay (Always visible for editing) */}
+              <div className="absolute inset-x-0 top-0 p-2 bg-gradient-to-b from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                <input 
+                  type="text"
+                  placeholder="이미지 주소 (URL) 입력"
+                  className="w-full text-xs bg-white/90 backdrop-blur px-2 py-1 rounded outline-none"
+                  value={property.imageUrl}
+                  onChange={(e) => handleInputChange(property.id, 'imageUrl', e.target.value)}
+                />
+              </div>
+
+              {/* Transaction Type & Property Type Badges */}
+              <div className="absolute top-12 left-4 flex gap-2">
+                <select
+                  className={`px-2 py-1 rounded-lg text-xs font-bold shadow-sm appearance-none outline-none cursor-pointer ${
                     property.transactionType === '매매' ? 'bg-blue-600 text-white' :
                     property.transactionType === '전세' ? 'bg-green-600 text-white' :
                     'bg-orange-500 text-white'
-                  }`}>
-                    {property.transactionType}
-                  </span>
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-slate-800 rounded-lg text-xs font-bold shadow-sm">
-                    {property.propertyType}
-                  </span>
-                </div>
-                {property.isRecommended && (
-                  <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <span className="text-yellow-300 text-xs font-bold flex items-center gap-1">
-                       ★ 88부동산 강력 추천
-                    </span>
-                  </div>
-                )}
+                  }`}
+                  value={property.transactionType}
+                  onChange={(e) => handleInputChange(property.id, 'transactionType', e.target.value)}
+                >
+                  <option value="매매">매매</option>
+                  <option value="전세">전세</option>
+                  <option value="월세">월세</option>
+                </select>
+
+                <input 
+                  type="text"
+                  className="w-20 px-2 py-1 bg-white/90 backdrop-blur-sm text-slate-800 rounded-lg text-xs font-bold shadow-sm outline-none text-center"
+                  placeholder="종류(아파트)"
+                  value={property.propertyType}
+                  onChange={(e) => handleInputChange(property.id, 'propertyType', e.target.value)}
+                />
               </div>
 
-              {/* Content Section */}
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-4">
-                  <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-brand-700 transition-colors">
-                    {property.complexName}
-                  </h3>
-                  <div className="flex items-center text-slate-500 text-sm gap-2">
-                    <MapPin size={14} />
-                    <span>{property.floorInfo}</span>
-                    <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                    <Ruler size={14} />
-                    <span>{property.area}</span>
-                  </div>
-                </div>
+              {/* Recommendation Toggle */}
+              <button 
+                onClick={() => toggleRecommended(property.id)}
+                className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/70 to-transparent text-left outline-none"
+              >
+                <span className={`text-xs font-bold flex items-center gap-1 ${property.isRecommended ? 'text-yellow-300' : 'text-gray-400'}`}>
+                   ★ {property.isRecommended ? '88부동산 강력 추천' : '추천 설정 (클릭)'}
+                </span>
+              </button>
+            </div>
 
-                <div className="mb-4 pb-4 border-b border-gray-100">
-                  <div className="text-2xl font-bold text-brand-700">
-                    {property.price}
-                  </div>
-                  <div className="flex items-center text-sm text-slate-500 mt-2 gap-1.5">
-                    <Calendar size={14} className="text-brand-500" />
-                    <span className="font-medium">입주 가능: {property.moveInDate}</span>
-                  </div>
+            {/* Content Section */}
+            <div className="p-6 flex flex-col flex-grow">
+              <div className="mb-4">
+                <input 
+                  type="text"
+                  className="w-full text-xl font-bold text-slate-900 mb-2 border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
+                  placeholder="단지명 입력 (예: 롯데캐슬)"
+                  value={property.complexName}
+                  onChange={(e) => handleInputChange(property.id, 'complexName', e.target.value)}
+                />
+                
+                <div className="flex items-center text-slate-500 text-sm gap-2">
+                  <MapPin size={14} className="shrink-0" />
+                  <input 
+                    type="text"
+                    className="w-full border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
+                    placeholder="층수 정보 (예: 15층)"
+                    value={property.floorInfo}
+                    onChange={(e) => handleInputChange(property.id, 'floorInfo', e.target.value)}
+                  />
+                  <span className="w-1 h-1 bg-slate-300 rounded-full shrink-0"></span>
+                  <Ruler size={14} className="shrink-0" />
+                  <input 
+                    type="text"
+                    className="w-full border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
+                    placeholder="평수 (예: 34평)"
+                    value={property.area}
+                    onChange={(e) => handleInputChange(property.id, 'area', e.target.value)}
+                  />
                 </div>
+              </div>
 
-                <div className="space-y-3 mb-6">
-                  <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed">
-                    {property.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
+              <div className="mb-4 pb-4 border-b border-gray-100">
+                <input 
+                  type="text"
+                  className="w-full text-2xl font-bold text-brand-700 border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-brand-200 mb-2"
+                  placeholder="금액 입력 (예: 6억 5천)"
+                  value={property.price}
+                  onChange={(e) => handleInputChange(property.id, 'price', e.target.value)}
+                />
+                <div className="flex items-center text-sm text-slate-500 gap-1.5">
+                  <Calendar size={14} className="text-brand-500 shrink-0" />
+                  <span className="font-medium shrink-0">입주:</span>
+                  <input 
+                    type="text"
+                    className="w-full border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
+                    placeholder="입주가능일 (예: 즉시)"
+                    value={property.moveInDate}
+                    onChange={(e) => handleInputChange(property.id, 'moveInDate', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                <textarea 
+                  className="w-full text-slate-600 text-sm leading-relaxed border border-dashed border-gray-300 rounded p-2 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300 resize-none h-20"
+                  placeholder="매물 상세 설명을 입력하세요."
+                  value={property.description}
+                  onChange={(e) => handleInputChange(property.id, 'description', e.target.value)}
+                />
+                
+                <div className="space-y-1">
+                   <p className="text-xs text-slate-400">특징 태그 (쉼표로 구분)</p>
+                   <input 
+                    type="text"
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded focus:border-brand-500 outline-none"
+                    placeholder="예: 올수리, 남향, 급매"
+                    defaultValue={property.features.join(', ')} 
+                    onChange={(e) => handleInputChange(property.id, 'features', e.target.value)}
+                  />
+                  {/* Visual Preview of Tags */}
+                  <div className="flex flex-wrap gap-2 mt-2">
                     {property.features.map((feature, idx) => (
                       <span key={idx} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md font-medium">
                         #{feature}
@@ -185,31 +212,23 @@ const RecommendList: React.FC = () => {
                     ))}
                   </div>
                 </div>
-
-                <a 
-                  href={`tel:${CONTACT_INFO.phone}`}
-                  className="mt-auto w-full py-3 bg-brand-50 text-brand-700 font-bold rounded-xl hover:bg-brand-600 hover:text-white transition-all flex items-center justify-center gap-2"
-                >
-                  <Phone size={18} />
-                  문의하기
-                </a>
               </div>
+
+              <a 
+                href={`tel:${CONTACT_INFO.phone}`}
+                className="mt-auto w-full py-3 bg-brand-50 text-brand-700 font-bold rounded-xl hover:bg-brand-600 hover:text-white transition-all flex items-center justify-center gap-2 pointer-events-none opacity-50"
+              >
+                <Phone size={18} />
+                문의하기 (미리보기)
+              </a>
             </div>
-          ))
-        ) : (
-          <div className="col-span-full py-20 text-center text-slate-500 bg-white rounded-2xl border border-dashed border-slate-300">
-             <div className="flex justify-center mb-4">
-               <Search size={40} className="text-slate-300" />
-             </div>
-             <p className="text-lg font-medium">조건에 맞는 매물이 없습니다.</p>
-             <p className="text-sm mt-2">전화 문의 주시면 아직 등록되지 않은 매물을 찾아드립니다.</p>
           </div>
-        )}
+        ))}
       </div>
 
       <div className="mt-12 text-center">
          <p className="text-slate-500 text-sm mb-4">
-           * 홈페이지에 게시된 매물 외에도 다양한 비공개 매물을 보유하고 있습니다.
+           * 이 페이지는 관리자 입력 모드입니다. 내용을 입력하면 실시간으로 반영됩니다.
          </p>
       </div>
     </Section>
