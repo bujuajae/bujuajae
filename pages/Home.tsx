@@ -7,42 +7,51 @@ const Home: React.FC = () => {
   return (
     <div className="w-full">
       {/* New Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center text-center text-white">
-        {/* Background Image with Parallax-like effect */}
+      <section className="relative h-screen min-h-[600px] flex items-center justify-center text-center text-white font-sans">
+        {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center z-0"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070')" }}
         ></div>
         
-        {/* Dark Overlay for readability */}
-        <div className="absolute inset-0 bg-black/50 z-0"></div>
+        {/* Dark Overlay (Gradient) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70 z-0"></div>
 
         {/* Hero Content */}
         <div className="relative z-10 px-5 max-w-5xl mx-auto flex flex-col items-center animate-fade-in-up">
-          <p className="text-[#ffce00] font-bold text-lg md:text-xl mb-6 tracking-widest uppercase">
-            진접 · 오남 · 왕숙지구 전문
-          </p>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 break-keep shadow-sm">
+          <div className="inline-block mb-6">
+            <p className="text-[#ffce00] border border-[#ffce00] rounded-full px-5 py-2 font-semibold text-sm md:text-base tracking-wider uppercase backdrop-blur-sm bg-black/10">
+              진접 · 오남 · 왕숙지구 전문 파트너
+            </p>
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 break-keep drop-shadow-2xl">
             남양주의 미래, 왕숙의 가치.<br className="hidden md:block" />
-            <span className="text-[#ffce00]">88부동산</span>이 가장 잘 압니다.
+            <span className="text-[#ffce00]">대표 전용성</span>이 확신으로 답합니다.
           </h1>
-          <p className="text-lg md:text-xl text-gray-100 mb-12 leading-relaxed max-w-3xl mx-auto break-keep opacity-90">
-            정밀한 데이터 분석과 현장 발로 뛰는 정보로<br className="hidden md:block" />
-            당신의 성공적인 자산 관리를 위한 파트너가 되어 드립니다.
+          
+          <p className="text-lg md:text-xl text-gray-100 mb-12 leading-relaxed max-w-3xl mx-auto break-keep opacity-95 font-light">
+            이름을 걸고 정직하게 일합니다.<br className="hidden md:block" />
+            정밀한 데이터 분석으로 당신의 성공적인 투자를 선도하겠습니다.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-5 w-full justify-center">
-            <Link 
-              to="/recommend" 
-              className="px-10 py-4 bg-[#ffce00] text-black font-bold rounded-lg hover:bg-yellow-400 transition-all shadow-xl hover:-translate-y-1 text-lg flex items-center justify-center"
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center">
+            <a 
+              href="#property" 
+              className="px-10 py-4 bg-[#ffce00] text-[#111] font-bold rounded-lg hover:bg-yellow-400 transition-all shadow-xl hover:-translate-y-1 text-lg flex items-center justify-center sm:min-w-[200px]"
+              onClick={(e) => {
+                e.preventDefault();
+                // If the section exists on this page, scroll to it, otherwise navigate
+                document.getElementById('property-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
-              추천 매물 보기
-            </Link>
+              실시간 매물 확인
+            </a>
             <Link 
               to="/contact" 
-              className="px-10 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-all shadow-xl hover:-translate-y-1 text-lg flex items-center justify-center"
+              className="px-10 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-all shadow-xl hover:-translate-y-1 text-lg flex items-center justify-center backdrop-blur-sm sm:min-w-[200px]"
             >
-              투자 상담 예약
+              전용성 대표와 직접 상담
             </Link>
           </div>
         </div>
@@ -84,90 +93,92 @@ const Home: React.FC = () => {
       </div>
 
       {/* Services Section */}
-      <Section title="주요 서비스" subtitle="고객님의 상황에 맞는 맞춤형 부동산 솔루션을 제공합니다.">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1 */}
-          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
-            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-              <HomeIcon size={28} />
+      <div id="property-section">
+        <Section title="주요 서비스" subtitle="고객님의 상황에 맞는 맞춤형 부동산 솔루션을 제공합니다.">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Card 1 */}
+            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
+              <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <HomeIcon size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-3">매매 상담</h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>실거래가 기준 시세 분석</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>매도·매수 시 유의사항 설명</span>
+                </li>
+              </ul>
             </div>
-            <h3 className="text-xl font-bold mb-3">매매 상담</h3>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>실거래가 기준 시세 분석</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>매도·매수 시 유의사항 설명</span>
-              </li>
-            </ul>
-          </div>
 
-          {/* Card 2 */}
-          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
-            <div className="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors">
-              <Key size={28} />
+            {/* Card 2 */}
+            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
+              <div className="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                <Key size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-3">전·월세 상담</h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>조건별 최적 매물 추천</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>계약 전 필수 체크리스트 안내</span>
+                </li>
+              </ul>
             </div>
-            <h3 className="text-xl font-bold mb-3">전·월세 상담</h3>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>조건별 최적 매물 추천</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>계약 전 필수 체크리스트 안내</span>
-              </li>
-            </ul>
-          </div>
 
-          {/* Card 3 */}
-          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
-            <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-              <LineChart size={28} />
+            {/* Card 3 */}
+            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
+              <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                <LineChart size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-3">청약·정책 상담</h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>왕숙지구 공공분양 구조 설명</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>나눔형·일반형 차이점 정리</span>
+                </li>
+              </ul>
             </div>
-            <h3 className="text-xl font-bold mb-3">청약·정책 상담</h3>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>왕숙지구 공공분양 구조 설명</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>나눔형·일반형 차이점 정리</span>
-              </li>
-            </ul>
-          </div>
 
-          {/* Card 4 */}
-          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
-            <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-              <FileText size={28} />
+            {/* Card 4 */}
+            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-shadow group">
+              <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <FileText size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-3">부동산 세금</h3>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>양도세·취득세 기본 구조</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
+                  <span>개인 상황별 주의사항 안내</span>
+                </li>
+              </ul>
             </div>
-            <h3 className="text-xl font-bold mb-3">부동산 세금</h3>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>양도세·취득세 기본 구조</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 shrink-0" />
-                <span>개인 상황별 주의사항 안내</span>
-              </li>
-            </ul>
           </div>
-        </div>
-        
-        <div className="mt-12 text-center">
-             <Link 
-              to="/contact" 
-              className="inline-flex items-center text-brand-700 font-semibold hover:text-brand-900 transition-colors"
-            >
-              자세한 상담 신청하기 <ChevronRight size={20} />
-            </Link>
-        </div>
-      </Section>
+          
+          <div className="mt-12 text-center">
+              <Link 
+                to="/contact" 
+                className="inline-flex items-center text-brand-700 font-semibold hover:text-brand-900 transition-colors"
+              >
+                자세한 상담 신청하기 <ChevronRight size={20} />
+              </Link>
+          </div>
+        </Section>
+      </div>
 
       {/* CTA Section */}
       <section className="bg-brand-900 text-white py-20">

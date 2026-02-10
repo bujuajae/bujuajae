@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone } from 'lucide-react';
-import { NAV_ITEMS, CONTACT_INFO, LEGAL_DISCLAIMER } from '../constants';
+import { Menu, X, Phone, Youtube, PenTool } from 'lucide-react';
+import { NAV_ITEMS, CONTACT_INFO } from '../constants';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -95,27 +95,54 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </a>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div>
-              <h3 className="text-xl font-bold text-white mb-4">88부동산 공인중개사사무소</h3>
-              <p className="mb-2">대표: 홍길동 | 등록번호: {CONTACT_INFO.registrationNumber}</p>
-              <p className="mb-2">주소: {CONTACT_INFO.address}</p>
-              <p className="mb-2">전화: {CONTACT_INFO.phone}</p>
+      <footer className="bg-[#222] text-[#ccc] pt-[60px] pb-[20px] px-[20px] text-[0.95rem]">
+        <div className="max-w-[1100px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-[40px] text-left">
+            {/* Footer Info */}
+            <div className="mb-[20px] md:mb-0">
+              <h2 className="text-white text-[1.5rem] font-bold mb-[20px]">88부동산</h2>
+              <div className="space-y-[8px]">
+                <p><strong className="text-[#ffce00] text-[1.1rem]">대표 공인중개사: 전용성</strong></p>
+                <p>{CONTACT_INFO.address}</p>
+                <p>사업자등록번호: 413-60-00000 | 등록번호: {CONTACT_INFO.registrationNumber}</p>
+              </div>
             </div>
-            <div className="text-sm bg-slate-800 p-4 rounded-lg border border-slate-700">
-              <p className="leading-relaxed text-slate-400">
-                {LEGAL_DISCLAIMER}
-              </p>
+
+            {/* Footer Contact */}
+            <div className="mb-[20px] md:mb-0">
+              <h3 className="text-white text-[1.1rem] font-bold mb-[20px]">상담 문의</h3>
+              <p className="text-[1.2rem] text-white font-bold mb-[8px]">{CONTACT_INFO.phone}</p>
+              <p>카카오톡: 88부동산</p>
+            </div>
+
+            {/* Footer Social */}
+            <div>
+              <h3 className="text-white text-[1.1rem] font-bold mb-[20px]">소셜 미디어</h3>
+              <div className="flex gap-[15px]">
+                <a 
+                  href={CONTACT_INFO.youtubeUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  title="부주아재 유튜브"
+                  className="w-[40px] h-[40px] bg-[#444] text-white rounded-full flex items-center justify-center transition-colors hover:bg-[#ffce00] hover:text-black text-[1.2rem]"
+                >
+                  <Youtube size={20} />
+                </a>
+                <a 
+                  href={CONTACT_INFO.blogUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  title="88부동산 블로그"
+                  className="w-[40px] h-[40px] bg-[#444] text-white rounded-full flex items-center justify-center transition-colors hover:bg-[#ffce00] hover:text-black text-[1.2rem]"
+                >
+                  <PenTool size={20} />
+                </a>
+              </div>
             </div>
           </div>
-          <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
-            <p>&copy; {new Date().getFullYear()} 88부동산. All rights reserved.</p>
-            <div className="flex space-x-4 mt-4 md:mt-0">
-              <a href={CONTACT_INFO.youtubeUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">유튜브 채널</a>
-              <a href={CONTACT_INFO.blogUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">네이버 블로그</a>
-            </div>
+          
+          <div className="mt-[50px] pt-[20px] border-t border-[#333] text-center text-[0.8rem] text-[#666]">
+            &copy; {new Date().getFullYear()} 88부동산. All Rights Reserved. | 책임중개 전용성
           </div>
         </div>
       </footer>
