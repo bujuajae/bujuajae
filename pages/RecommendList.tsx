@@ -1,259 +1,315 @@
 import React, { useState } from 'react';
 import Section from '../components/Section';
 import { Property } from '../types';
-import { MapPin, Calendar, Ruler, Phone, Image as ImageIcon } from 'lucide-react';
-import { CONTACT_INFO } from '../constants';
+import { MapPin, Ruler, Calendar, ArrowRight, BedDouble, Bath, Compass, Check, Search, Sparkles, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const INITIAL_EMPTY_PROPERTIES: Property[] = Array(6).fill(null).map((_, i) => ({
-  id: `prop-${i}`,
-  transactionType: '매매',
-  propertyType: '',
-  complexName: '',
-  area: '',
-  price: '',
-  moveInDate: '',
-  floorInfo: '',
-  features: [],
-  description: '',
-  imageUrl: '',
-  isRecommended: false,
-}));
+// High-quality mock data for display only
+const FEATURED_PROPERTIES: Property[] = [
+  {
+    id: 'p1',
+    status: 'available',
+    transactionType: '매매',
+    propertyType: '아파트',
+    complexName: '진접 롯데캐슬 시그니처',
+    addressShort: '진접읍 금곡리',
+    areaSupply: '112㎡',
+    areaPrivate: '84㎡',
+    price: '7억 2,000',
+    floorInfo: '15층 / 28층',
+    roomBath: '방 3 / 욕실 2',
+    direction: '남동향',
+    moveInDate: '즉시 입주 협의',
+    features: ['올수리', '뻥뷰', '초품아', 'GTX호재'],
+    description: '진접역 도보 5분 초역세권 단지입니다. 주인분이 직접 거주하셔서 관리가 매우 잘 되어 있으며, 최근 화장실과 주방 리모델링을 완료했습니다. 거실에서 바라보는 뷰가 막힘없이 시원합니다.',
+    imageUrl: 'https://images.unsplash.com/photo-1600596542815-22b8915252d7?q=80&w=2000&auto=format&fit=crop',
+    isRecommended: true
+  },
+  {
+    id: 'p2',
+    status: 'reserved',
+    transactionType: '전세',
+    propertyType: '아파트',
+    complexName: '오남 서희스타힐스 2단지',
+    addressShort: '오남읍 양지리',
+    areaSupply: '79㎡',
+    areaPrivate: '59㎡',
+    price: '3억 5,000',
+    floorInfo: '7층 / 20층',
+    roomBath: '방 3 / 욕실 2',
+    direction: '남향',
+    moveInDate: '2026.04 이후',
+    features: ['신축급', '융자없음', '시스템에어컨'],
+    description: '신혼부부에게 강력 추천하는 59타입 귀한 전세입니다. 융자 없는 안전한 매물이며, 전세자금대출 100% 협조 가능합니다. 단지 내 조경이 훌륭하고 커뮤니티 시설이 잘 갖춰져 있습니다.',
+    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop',
+    isRecommended: true
+  },
+  {
+    id: 'p3',
+    status: 'available',
+    transactionType: '월세',
+    propertyType: '오피스텔',
+    complexName: '다산 킹덤타워',
+    addressShort: '다산동',
+    areaSupply: '45㎡',
+    areaPrivate: '28㎡',
+    price: '1,000 / 70',
+    floorInfo: '고층',
+    roomBath: '1.5룸',
+    direction: '동향',
+    moveInDate: '즉시 입주',
+    features: ['풀옵션', '역세권', '사업자가능'],
+    description: '다산역 도보 3분 거리의 풀옵션 오피스텔입니다. 냉장고, 세탁기, 에어컨 등 가전제품 일체 구비되어 있어 몸만 들어오시면 됩니다. 사업자 등록 가능하여 사무실 겸용으로도 좋습니다.',
+    imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=2000&auto=format&fit=crop',
+    isRecommended: false
+  },
+  {
+    id: 'p4',
+    status: 'available',
+    transactionType: '매매',
+    propertyType: '아파트',
+    complexName: '왕숙 신안인스빌',
+    addressShort: '진접읍',
+    areaSupply: '110㎡',
+    areaPrivate: '84㎡',
+    price: '6억 1,000',
+    floorInfo: '로얄층',
+    roomBath: '방 3 / 욕실 2',
+    direction: '남서향',
+    moveInDate: '2개월 내 협의',
+    features: ['급매', '확장형', '탄천뷰'],
+    description: '현재 나와있는 매물 중 가장 가격 경쟁력이 뛰어난 급매물입니다. 앞뒤 베란다 확장되어 있어 실사용 면적이 매우 넓으며, 탄천을 바라보는 영구 조망권이 확보되어 있습니다.',
+    imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2000&auto=format&fit=crop',
+    isRecommended: true
+  },
+  {
+    id: 'p5',
+    status: 'completed',
+    transactionType: '매매',
+    propertyType: '아파트',
+    complexName: '센트레빌 시티',
+    addressShort: '진접읍',
+    areaSupply: '130㎡',
+    areaPrivate: '101㎡',
+    price: '거래완료',
+    floorInfo: '5층',
+    roomBath: '방 4 / 욕실 2',
+    direction: '남향',
+    moveInDate: '-',
+    features: ['대형평수', '테라스', '거래완료'],
+    description: '이 매물은 최근 거래가 완료되었습니다. 유사한 조건의 매물을 찾으신다면 전화 문의 부탁드립니다. 대형 평형대의 수요가 꾸준히 증가하고 있습니다.',
+    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&auto=format&fit=crop',
+    isRecommended: false
+  }
+];
 
 const RecommendList: React.FC = () => {
   const [filterType, setFilterType] = useState<'전체' | '매매' | '전세' | '월세'>('전체');
-  const [properties, setProperties] = useState<Property[]>(INITIAL_EMPTY_PROPERTIES);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const handleInputChange = (id: string, field: keyof Property, value: any) => {
-    setProperties(prev => prev.map(p => {
-      if (p.id !== id) return p;
-      
-      // Handle special cases
-      if (field === 'features') {
-        // Assume value is a string, split by comma
-        return { ...p, features: value.split(',').map((s: string) => s.trim()).filter(Boolean) };
-      }
-      
-      return { ...p, [field]: value };
-    }));
-  };
-
-  const handleImagePaste = (id: string, e: React.ClipboardEvent) => {
-    const items = e.clipboardData.items;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
-        const blob = items[i].getAsFile();
-        if (blob) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            if (event.target?.result) {
-              handleInputChange(id, 'imageUrl', event.target.result as string);
-            }
-          };
-          reader.readAsDataURL(blob);
-          e.preventDefault(); // Prevent default paste behavior
-          return;
-        }
-      }
-    }
-  };
-
-  const toggleRecommended = (id: string) => {
-    setProperties(prev => prev.map(p => 
-      p.id === id ? { ...p, isRecommended: !p.isRecommended } : p
-    ));
-  };
-
-  const filteredProperties = properties.filter(item => {
-    if (filterType === '전체') return true;
-    return item.transactionType === filterType;
+  const filteredProperties = FEATURED_PROPERTIES.filter(item => {
+    const matchesType = filterType === '전체' || item.transactionType === filterType;
+    const matchesSearch = item.complexName.includes(searchTerm) || item.addressShort.includes(searchTerm) || item.features.some(f => f.includes(searchTerm));
+    return matchesType && matchesSearch;
   });
 
   return (
-    <Section title="오늘의 추천 매물" subtitle="매물 정보를 직접 입력하여 관리할 수 있습니다." grayBg>
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-10">
-        {['전체', '매매', '전세', '월세'].map((type) => (
-          <button
-            key={type}
-            onClick={() => setFilterType(type as any)}
-            className={`px-6 py-2.5 rounded-full font-bold transition-all duration-200 shadow-sm ${
-              filterType === type
-                ? 'bg-brand-600 text-white ring-2 ring-brand-600 ring-offset-2'
-                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
-            }`}
+    <Section title="추천 매물" subtitle="88부동산이 엄선한 진접·오남·왕숙지구 프리미엄 매물입니다." grayBg>
+      
+      {/* AI Partner 'Leesiljang' Integration Banner */}
+      <div className="mb-12 bg-gradient-to-r from-[#2c3e50] to-[#4ca1af] rounded-2xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden group animate-fade-in">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-center md:text-left">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-teal-100 mb-3 border border-white/20">
+              <Sparkles size={14} className="text-yellow-300" />
+              <span>AI 파트너 '이실장' 제휴</span>
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold mb-2">원하는 매물을 못 찾으셨나요?</h3>
+            <p className="text-teal-50 leading-relaxed">
+              <span className="font-bold text-white">AI 부동산 파트너 '이실장'</span> 서비스로<br className="hidden md:block"/>
+              고객님의 조건에 딱 맞는 매물을 실시간으로 추천받으세요.
+            </p>
+          </div>
+          <a 
+            href="https://www.aipartner.com/home" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="shrink-0 px-8 py-4 bg-white text-[#2c3e50] font-bold rounded-xl hover:bg-teal-50 transition-all shadow-lg flex items-center gap-2 hover:-translate-y-1 group-hover:shadow-2xl"
           >
-            {type}
-          </button>
-        ))}
+            AI 추천 매물 확인하기 <ExternalLink size={18} />
+          </a>
+        </div>
+      </div>
+
+      {/* Search & Filter */}
+      <div className="flex flex-col items-center gap-6 mb-12">
+        <div className="relative w-full max-w-md">
+           <input 
+             type="text" 
+             placeholder="아파트명, 지역명, 특징으로 검색 (예: 롯데캐슬, GTX)" 
+             className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none shadow-sm transition-all"
+             value={searchTerm}
+             onChange={(e) => setSearchTerm(e.target.value)}
+           />
+           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-2">
+          {['전체', '매매', '전세', '월세'].map((type) => (
+            <button
+              key={type}
+              onClick={() => setFilterType(type as any)}
+              className={`px-6 py-2 rounded-full font-bold transition-all duration-200 shadow-sm text-sm ${
+                filterType === type
+                  ? 'bg-brand-600 text-white ring-2 ring-brand-200 ring-offset-2'
+                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Property Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredProperties.map((property) => (
-          <div key={property.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-            {/* Image Section - Paste Enabled */}
-            <div 
-              className="relative h-60 bg-gray-200 overflow-hidden group cursor-pointer focus:outline-none focus:ring-4 focus:ring-brand-100 transition-all"
-              tabIndex={0}
-              onPaste={(e) => handleImagePaste(property.id, e)}
-              onClick={(e) => e.currentTarget.focus()}
-            >
-              {property.imageUrl ? (
+      {filteredProperties.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProperties.map((property) => (
+            <div key={property.id} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative">
+              
+              {/* Image Section */}
+              <div className="relative h-64 overflow-hidden">
                 <img 
                   src={property.imageUrl} 
                   alt={property.complexName} 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2 p-4 text-center select-none">
-                  <ImageIcon size={32} />
-                  <span className="text-sm font-medium">영역 클릭 후<br/>이미지를 붙여넣으세요 (Ctrl+V)</span>
-                </div>
-              )}
-              
-              {/* Hover Overlay for Paste Instruction */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                 <span className="text-white text-sm font-bold bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
-                   이미지 붙여넣기 (Ctrl+V)
-                 </span>
-              </div>
-
-              {/* Transaction Type & Property Type Badges */}
-              <div className="absolute top-4 left-4 flex gap-2 z-10" onClick={(e) => e.stopPropagation()}>
-                <select
-                  className={`px-2 py-1 rounded-lg text-xs font-bold shadow-sm appearance-none outline-none cursor-pointer ${
-                    property.transactionType === '매매' ? 'bg-blue-600 text-white' :
-                    property.transactionType === '전세' ? 'bg-green-600 text-white' :
-                    'bg-orange-500 text-white'
-                  }`}
-                  value={property.transactionType}
-                  onChange={(e) => handleInputChange(property.id, 'transactionType', e.target.value)}
-                >
-                  <option value="매매">매매</option>
-                  <option value="전세">전세</option>
-                  <option value="월세">월세</option>
-                </select>
-
-                <input 
-                  type="text"
-                  className="w-20 px-2 py-1 bg-white/90 backdrop-blur-sm text-slate-800 rounded-lg text-xs font-bold shadow-sm outline-none text-center"
-                  placeholder="종류(아파트)"
-                  value={property.propertyType}
-                  onChange={(e) => handleInputChange(property.id, 'propertyType', e.target.value)}
-                />
-              </div>
-
-              {/* Recommendation Toggle */}
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleRecommended(property.id);
-                }}
-                className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/70 to-transparent text-left outline-none z-10"
-              >
-                <span className={`text-xs font-bold flex items-center gap-1 ${property.isRecommended ? 'text-yellow-300' : 'text-gray-400'}`}>
-                   ★ {property.isRecommended ? '88부동산 강력 추천' : '추천 설정 (클릭)'}
-                </span>
-              </button>
-            </div>
-
-            {/* Content Section */}
-            <div className="p-6 flex flex-col flex-grow">
-              <div className="mb-4">
-                <input 
-                  type="text"
-                  className="w-full text-xl font-bold text-slate-900 mb-2 border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
-                  placeholder="단지명 입력 (예: 롯데캐슬)"
-                  value={property.complexName}
-                  onChange={(e) => handleInputChange(property.id, 'complexName', e.target.value)}
-                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
                 
-                <div className="flex items-center text-slate-500 text-sm gap-2">
-                  <MapPin size={14} className="shrink-0" />
-                  <input 
-                    type="text"
-                    className="w-full border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
-                    placeholder="층수 정보 (예: 15층)"
-                    value={property.floorInfo}
-                    onChange={(e) => handleInputChange(property.id, 'floorInfo', e.target.value)}
-                  />
-                  <span className="w-1 h-1 bg-slate-300 rounded-full shrink-0"></span>
-                  <Ruler size={14} className="shrink-0" />
-                  <input 
-                    type="text"
-                    className="w-full border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
-                    placeholder="평수 (예: 34평)"
-                    value={property.area}
-                    onChange={(e) => handleInputChange(property.id, 'area', e.target.value)}
-                  />
+                {/* Badges */}
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <span className={`px-3 py-1 rounded-md text-xs font-bold shadow-sm backdrop-blur-md ${
+                    property.transactionType === '매매' ? 'bg-blue-600/90 text-white' :
+                    property.transactionType === '전세' ? 'bg-green-600/90 text-white' :
+                    'bg-orange-500/90 text-white'
+                  }`}>
+                    {property.transactionType}
+                  </span>
+                  <span className="px-3 py-1 bg-white/90 backdrop-blur-md text-slate-800 rounded-md text-xs font-bold shadow-sm">
+                    {property.propertyType}
+                  </span>
+                </div>
+
+                {/* Status Overlay if not available */}
+                {property.status !== 'available' && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[2px] z-10">
+                    <div className={`px-6 py-3 border-2 rounded-xl text-xl font-black uppercase tracking-widest transform -rotate-12 ${
+                      property.status === 'completed' ? 'border-white text-white' : 'border-yellow-400 text-yellow-400'
+                    }`}>
+                      {property.status === 'completed' ? '거래완료' : '계약진행중'}
+                    </div>
+                  </div>
+                )}
+
+                {/* Price Tag */}
+                <div className="absolute bottom-4 left-4 right-4">
+                   <p className="text-white font-extrabold text-2xl drop-shadow-md">
+                     {property.price}
+                   </p>
+                   <div className="flex items-center text-gray-200 text-sm gap-1">
+                     <MapPin size={14} />
+                     {property.addressShort}
+                   </div>
                 </div>
               </div>
 
-              <div className="mb-4 pb-4 border-b border-gray-100">
-                <input 
-                  type="text"
-                  className="w-full text-2xl font-bold text-brand-700 border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-brand-200 mb-2"
-                  placeholder="금액 입력 (예: 6억 5천)"
-                  value={property.price}
-                  onChange={(e) => handleInputChange(property.id, 'price', e.target.value)}
-                />
-                <div className="flex items-center text-sm text-slate-500 gap-1.5">
-                  <Calendar size={14} className="text-brand-500 shrink-0" />
-                  <span className="font-medium shrink-0">입주:</span>
-                  <input 
-                    type="text"
-                    className="w-full border-b border-dashed border-gray-300 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300"
-                    placeholder="입주가능일 (예: 즉시)"
-                    value={property.moveInDate}
-                    onChange={(e) => handleInputChange(property.id, 'moveInDate', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <textarea 
-                  className="w-full text-slate-600 text-sm leading-relaxed border border-dashed border-gray-300 rounded p-2 focus:border-brand-500 outline-none bg-transparent placeholder-gray-300 resize-none h-20"
-                  placeholder="매물 상세 설명을 입력하세요."
-                  value={property.description}
-                  onChange={(e) => handleInputChange(property.id, 'description', e.target.value)}
-                />
-                
-                <div className="space-y-1">
-                   <p className="text-xs text-slate-400">특징 태그 (쉼표로 구분)</p>
-                   <input 
-                    type="text"
-                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded focus:border-brand-500 outline-none"
-                    placeholder="예: 올수리, 남향, 급매"
-                    value={property.features.join(', ')}
-                    onChange={(e) => handleInputChange(property.id, 'features', e.target.value)}
-                  />
-                  {/* Visual Preview of Tags */}
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {property.features.map((feature, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md font-medium">
-                        #{feature}
-                      </span>
-                    ))}
+              {/* Content Section */}
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-4">
+                  <h3 className="text-xl font-bold text-slate-900 mb-2 line-clamp-1">{property.complexName}</h3>
+                  
+                  {/* Specs Grid */}
+                  <div className="grid grid-cols-2 gap-y-2 text-sm text-slate-600 mt-3 bg-gray-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Ruler size={16} className="text-brand-500"/>
+                      <span>{property.areaPrivate}/{property.areaSupply}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <BedDouble size={16} className="text-brand-500"/>
+                      <span>{property.roomBath}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Compass size={16} className="text-brand-500"/>
+                      <span>{property.floorInfo}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="text-brand-500"/>
+                      <span>{property.moveInDate}</span>
+                    </div>
                   </div>
                 </div>
+
+                <p className="text-slate-600 text-sm leading-relaxed mb-6 line-clamp-3">
+                  {property.description}
+                </p>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {property.features.map((feature, idx) => (
+                    <span key={idx} className="px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full font-medium flex items-center gap-1">
+                      <Check size={10} strokeWidth={3} /> {feature}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Action Button */}
+                <div className="mt-auto pt-4 border-t border-gray-100">
+                  <Link 
+                    to="/contact"
+                    state={{ interestedProperty: `[${property.transactionType}] ${property.complexName}` }}
+                    className={`w-full py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                      property.status === 'available'
+                        ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-md hover:shadow-lg'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {property.status === 'available' ? '상담 문의하기' : '상담 불가'}
+                    {property.status === 'available' && <ArrowRight size={18} />}
+                  </Link>
+                </div>
               </div>
-
-              <a 
-                href={`tel:${CONTACT_INFO.phone}`}
-                className="mt-auto w-full py-3 bg-brand-50 text-brand-700 font-bold rounded-xl hover:bg-brand-600 hover:text-white transition-all flex items-center justify-center gap-2 pointer-events-none opacity-50"
-              >
-                <Phone size={18} />
-                문의하기 (미리보기)
-              </a>
+              
+              {/* Recommended Badge */}
+              {property.isRecommended && (
+                <div className="absolute top-0 right-0 bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-bl-xl shadow-md z-20">
+                  88부동산 추천
+                </div>
+              )}
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+          <p className="text-gray-500 text-lg">조건에 맞는 매물이 없습니다.</p>
+          <button 
+            onClick={() => {setSearchTerm(''); setFilterType('전체');}}
+            className="mt-4 text-brand-600 font-bold hover:underline"
+          >
+            모든 매물 보기
+          </button>
+        </div>
+      )}
 
-      <div className="mt-12 text-center">
-         <p className="text-slate-500 text-sm mb-4">
-           * 이 페이지는 관리자 입력 모드입니다. 내용을 입력하면 실시간으로 반영됩니다.
+      <div className="mt-12 text-center bg-blue-50 p-8 rounded-2xl border border-blue-100">
+         <h3 className="text-xl font-bold text-slate-800 mb-2">원하시는 매물이 없으신가요?</h3>
+         <p className="text-slate-600 mb-6">
+           홈페이지에 게시되지 않은 비공개 매물도 다수 보유하고 있습니다.<br/>
+           조건을 남겨주시면 딱 맞는 매물을 찾아드립니다.
          </p>
+         <Link to="/contact" className="inline-block px-8 py-3 bg-white text-brand-700 border border-brand-200 font-bold rounded-lg hover:bg-brand-50 transition-colors">
+            매물 찾아달라고 요청하기
+         </Link>
       </div>
     </Section>
   );

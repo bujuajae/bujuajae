@@ -21,10 +21,34 @@ const ScrollToTop = () => {
   return null;
 }
 
+// Dynamic Title Updater
+const PageTitleUpdater = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      '/': '홈 | 88부동산',
+      '/about': '소개 | 88부동산',
+      '/recommend': '추천 매물 | 88부동산',
+      '/region/jinjeop-onam': '진접·오남 분석 | 88부동산',
+      '/region/jinjeop2': '진접2지구 분석 | 88부동산',
+      '/region/wangsuk': '왕숙지구 분석 | 88부동산',
+      '/social': '유튜브·블로그 | 88부동산',
+      '/contact': '상담 신청 | 88부동산',
+    };
+
+    const title = titles[location.pathname] || '88부동산 | 진접·오남·왕숙지구 전문';
+    document.title = title;
+  }, [location]);
+
+  return null;
+};
+
 const App: React.FC = () => {
   return (
-    <Router>
+    <Router basename="/">
       <ScrollToTop />
+      <PageTitleUpdater />
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />

@@ -30,25 +30,35 @@ export enum ConsultationType {
 
 export interface Transaction {
   id: string;
+  type: '매매' | '전세' | '월세';
   complexName: string;
   area: string;
   floor: number;
   price: string;
   date: string;
-  type: '매매' | '전세' | '월세';
+}
+
+export interface ProcessedTransaction extends Transaction {
+  priceValue: number;
+  areaValue: number;
 }
 
 export interface Property {
   id: string;
+  status: 'available' | 'reserved' | 'completed'; // 매물 상태
   transactionType: '매매' | '전세' | '월세'; // 거래 유형
-  propertyType: string; // 주택의 종류 (아파트, 오피스텔 등)
+  propertyType: string; // 주택의 종류
   complexName: string; // 단지명
-  area: string; // 평수 (공급/전용)
+  addressShort: string; // 짧은 주소 (예: 진접읍 금곡리)
+  areaSupply: string; // 공급면적
+  areaPrivate: string; // 전용면적
   price: string; // 금액
-  moveInDate: string; // 입주 가능일
   floorInfo: string; // 층수 정보
+  roomBath: string; // 방/욕실
+  direction: string; // 향
+  moveInDate: string; // 입주 가능일
   features: string[]; // 특징 태그
-  description: string; // 한줄 설명
+  description: string; // 상세 설명
   imageUrl: string; // 대표 이미지
   isRecommended?: boolean; // 추천 여부
 }
